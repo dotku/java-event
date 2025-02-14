@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/event")
 public class EventController {
@@ -16,13 +18,16 @@ public class EventController {
     this.eventService = eventService;
   }
 
+  @GetMapping
+  @ResponseStatus(HttpStatus.OK)
+  public List<Event> getAllEvents() {
+    return eventService.getAllEvent();
+  }
+
   @GetMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
   public Event getEventByIdNew(@PathVariable Long id) {
-    System.out.println("Fetching event with ID: " + id);
-    Event event = eventService.getEventById(id);
-    System.out.println("Retrieved event: " + event);
-    return eventService.getEventById(id);
+    return getEventById(id);
   }
 
   @GetMapping("/byId/{id}")
@@ -35,5 +40,31 @@ public class EventController {
   @ResponseStatus(HttpStatus.CREATED)
   public Event createEvent(@RequestBody Event event) {
     return eventService.createNewEvent(event);
+  }
+
+  @GetMapping("/top3")
+  @ResponseStatus(HttpStatus.OK)
+  public List<Event> getTop3By(@RequestParam(name = "by", required = true) String by) {
+    if (by == null || by.trim().isEmpty()) {
+      throw new BadRequestException("Parameter 'by' is required and must be either 'cost' or 'duration'");
+    }
+    String criteria = by.trim().toLowerCase();
+    if (!criteria.equals("cost") && !criteria.equals("duration")) {
+      throw new BadRequestException("Parameter 'by' must be either 'cost' or 'duration'");
+    }
+    return eventService.top3By(criteria);
+  }
+
+  @GetMapping("/total")
+  @ResponseStatus(HttpStatus.OK)
+  public Integer getTotalBy(@RequestParam(name = "by", required = true) String by) {
+    if (by == null || by.trim().isEmpty()) {
+      throw new BadRequestException("Parameter 'by' is required and must be either 'cost' or 'duration'");
+    }
+    String criteria = by.trim().toLowerCase();
+    if (!criteria.equals("cost") && !criteria.equals("duration")) {
+      throw new BadRequestException("Parameter 'by' must be either 'cost' or 'duration'");
+    }
+    return eventService.totalBy(criteria);
   }
 }
