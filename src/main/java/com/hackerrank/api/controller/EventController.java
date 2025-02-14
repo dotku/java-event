@@ -16,6 +16,15 @@ public class EventController {
     this.eventService = eventService;
   }
 
+  @GetMapping("/{id}")
+  @ResponseStatus(HttpStatus.OK)
+  public Event getEventByIdNew(@PathVariable Long id) {
+    System.out.println("Fetching event with ID: " + id);
+    Event event = eventService.getEventById(id);
+    System.out.println("Retrieved event: " + event);
+    return eventService.getEventById(id);
+  }
+
   @GetMapping("/byId/{id}")
   @ResponseStatus(HttpStatus.OK)
   public Event getEventById(@PathVariable Long id) {
